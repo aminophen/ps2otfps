@@ -1,0 +1,93 @@
+%
+% texexec --eptex filename
+%
+\setuppapersize[A4][A4]
+%
+\startsetups myheader
+\space
+\ss ps2otfps
+\space
+\stopsetups
+%
+\startsetups myfooter
+\space
+\ss -\ \pagenumber \ -
+\space
+\stopsetups
+%
+\setupheadertexts[\setups{myheader}]
+\setupfootertexts[\setups{myfooter}]
+%
+\setupcolors[cmyk=yes,state=start]
+%
+%
+\starttext
+\midaligned{%
+ \bfd\ss ps2otfps について
+}
+
+\blank[2*big]
+{\bfa 始めに}
+\blank[big]
+通常{\tt OpenType}フォントを{\tt dvips}, {\tt Ghostsctipt}で
+使用するには
+\startitemize[n][stopper={.},style=bold]
+\item {\tt Ghostscript}の{\tt cidfmap}に
+\starttyping
+/Ryumin-Light /HiraMinProN-W3 ;
+\stoptyping
+のような記述をしておく。
+\item {\tt Ghostscript}の{\tt Resource/CIDFont}ディレクトリに
+{\tt OpenType}フォントのコピーまたはリンクを{\tt PostScript}名
+で置いておく。{\tt Windows}の場合は，実物あるいはハードリンクと
+する。(シンボリックリンクではうまく行かなかった経験があるので)。
+\item {\tt Ghostscript}の{\tt Resource/Font}ディレクトリに
+各エンコーディングごとに，ファイル名{\tt HiraMinProN-W3-H}，内容
+\starttyping
+/HiraMinProN-W3-H
+/H /CMap findresource
+[/HiraMinProN-W3 /CIDFont findresource]
+composefont pop
+\stoptyping
+のようなファイルを置いておく。
+\stopitemize
+%
+のようにします。3番目に記述した，{\tt Resource/Font}ディレクトリに
+置くファイルは，各フォント，各エンコーディングに
+対して必要なので，大量になり非常に面倒です。
+プログラム{\tt ps2otfps}はこの3番目の必要性を全く無くするものです。
+
+\blank[2*big]
+{\bfa 使用法}
+\starttyping
+dvips -f [other options] dviname | ps2otfps -f >results.ps
+\stoptyping
+これで出来た{\tt results.ps}は{\tt Ghostscript}で見たり，印刷したり，
+あるいは{\tt PDF}に変換したりすることが可能です。
+通常は上のように使用しますが，既に通常の方法で{\tt dvips}で作成
+した{\tt ps}ファイルを，{\tt Ghostscript}で処理可能な{\tt ps}ファイル
+に変換することもできます:
+\starttyping
+ps2otfps oldfile newfile
+\stoptyping
+\page
+{\bfa コンフィグレーションファイル}
+\blank[big]
+{\tt texmf-dist/dvips/ps2otfps}なるディレクトリ
+に{\tt psnames-for-otf}という名前のファイルがあります。
+このファイルには既にかなりの数の{\tt OpenType}フォント
+の{\tt PostScript}名が記述してあります。他のフォントが
+必要な場合には，単にこのファイルにそのフォント
+の{\tt PostScript}名を追加するだけでそのフォント
+を{\tt ps2otfps}に認識させることができます。書き方はファイルを
+見たら自明ですが，一行に一個の名前を書きます。{\tt OpenType}フォント
+の{\tt PostScript}名がわからない場合は，コマンド{\tt otfinfo}を
+使用すれば良いでしょう:
+\starttyping
+otfinfo --postscript-name OpenTypeFontFileName
+\stoptyping
+あるいは簡単に
+\starttyping
+otfinfo -p OpenTypeFontFileName
+\stoptyping
+\stoptext
