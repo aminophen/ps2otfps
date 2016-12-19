@@ -1,0 +1,11 @@
+KPSELIB = ../kpathsea/.libs/libkpathsea.a
+CFLAGS = -MD -O2 -I..
+CC = gcc
+ps2otfps: ps2otfps.o
+	$(CC) -o $@ $< $(KPSELIB)
+
+ps2otfps.o: ps2otfps.c
+	$(CC) -c -o $@ $(CFLAGS) $<
+
+clean::
+	rm -f *~ *.o *.d ps2otfps
